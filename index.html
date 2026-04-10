@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Advanced Todo App</title>
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Advanced Todo App</h1>
+
+      <!-- Add Todo Form -->
+      <div class="todo-form">
+        <input
+          type="text"
+          id="todoInput"
+          placeholder="Write a new task..."
+        />
+
+        <select id="categorySelect">
+          <option value="study">Study</option>
+          <option value="work">Work</option>
+          <option value="personal">Personal</option>
+          <option value="shopping">Shopping</option>
+        </select>
+
+        <select id="prioritySelect">
+          <option value="low">Low Priority</option>
+          <option value="medium">Medium Priority</option>
+          <option value="high">High Priority</option>
+        </select>
+
+        <input type="date" id="dueDateInput" />
+
+        <button id="addBtn">Add Task</button>
+      </div>
+
+      <!-- Search -->
+      <div class="search-box">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search tasks..."
+        />
+      </div>
+
+      <!-- Filters -->
+      <div class="filters">
+        <button id="allBtn" class="selected">All</button>
+        <button id="activeBtn">Active</button>
+        <button id="completedBtn">Completed</button>
+
+        <select id="categoryFilter">
+          <option value="all">All Categories</option>
+          <option value="study">Study</option>
+          <option value="work">Work</option>
+          <option value="personal">Personal</option>
+          <option value="shopping">Shopping</option>
+        </select>
+      </div>
+
+      <!-- Info -->
+      <div class="info-bar">
+        <p id="taskCount">0 tasks left</p>
+        <button id="clearCompletedBtn">Clear Completed</button>
+      </div>
+
+      <!-- Todo List -->
+      <ul id="todoList"></ul>
+    </div>
+
+    <script src="./js/script.js"></script>
+  </body>
+</html>
