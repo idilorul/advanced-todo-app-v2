@@ -6,33 +6,19 @@ A more advanced todo application built with **Vanilla JavaScript**.
 
 The goal is to move beyond a basic todo app and build a more structured application with richer task data and better UI logic.
 
-## Planned Features
+## Latest Update
 
-* Add new tasks
-* Delete tasks
-* Mark tasks as completed
-* Search tasks
-* Filter by status
-* Filter by category
-* Set task priority
-* Add due dates
-* Clear completed tasks
-* Save tasks with localStorage
+Implemented dynamic rendering logic for todos using a centralized `renderTodos()` function.
 
-## What I Want to Practice
+Each todo item is now:
 
-* DOM manipulation
-* State management
-* Form handling
-* Filtering logic
-* Working with arrays and objects
-* Writing cleaner and more structured JavaScript
+* Generated dynamically from the state (`todos` array)
+* Structured into separate content and action sections
+* Displaying task text, category, priority, and due date
+* Linked to its data using a unique `data-id` attribute
 
-## Current Status
+This update establishes a clean separation between state and UI, making the app scalable for upcoming features like delete, edit, and filtering.
 
-🚧 In progress
-
-At the moment, the project setup is ready and the first task-creation logic has been implemented.
 
 ## Tech Stack
 

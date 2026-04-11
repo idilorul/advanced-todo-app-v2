@@ -101,3 +101,30 @@ button:hover {
   color: #777;
   padding: 20px;
 }
+
+.todo-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.todo-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.category {
+  color: blue;
+}
+
+.priority {
+  color: red;
+}
+
+.due-date {
+  color: gray;
+}
+
+.delete-btn {
+  background: red;
+  color: white;
+}

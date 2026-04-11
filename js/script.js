@@ -59,8 +59,62 @@ function addTodo() {
   prioritySelect.value = "low";
   dueDateInput.value = "";
 
+  renderTodos();
+
   console.log(todos);
 }
 
-addBtn.addEventListener("click", addTodo);
+// ========================
+// RENDER TODOS
+// ========================
+function renderTodos() {
+  todoList.innerHTML = "";
 
+  todos.forEach(function (todo) {
+    const li = document.createElement("li");
+     li.dataset.id = todo.id;
+
+    const contentDiv = document.createElement("div");
+   contentDiv.classList.add("todo-content");
+
+    const actionsDiv = document.createElement("div");
+    actionsDiv.classList.add("todo-actions");
+
+    const textSpan = document.createElement("span");
+    textSpan.textContent = todo.text;
+
+    const categoryInfo = document.createElement("small");
+    categoryInfo.textContent = "Category: " + todo.category;
+    categoryInfo.classList.add("category");
+
+    const priorityInfo = document.createElement("small");
+    priorityInfo.textContent = "Priority: " + todo.priority;
+    priorityInfo.classList.add("priority");
+
+    const dueDateInfo = document.createElement("small");
+    dueDateInfo.classList.add("due-date");
+    if (todo.dueDate === "") {
+        dueDateInfo.textContent = "Due: No date";
+    } else {
+        dueDateInfo.textContent = "Due: " + todo.dueDate;
+    }
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Delete";
+    deleteBtn.classList.add("delete-btn");
+
+    contentDiv.appendChild(textSpan);
+    contentDiv.appendChild(categoryInfo);
+    contentDiv.appendChild(priorityInfo);
+    contentDiv.appendChild(dueDateInfo);
+
+    actionsDiv.appendChild(deleteBtn);
+
+    li.appendChild(contentDiv);
+    li.appendChild(actionsDiv);
+
+    todoList.appendChild(li);
+  });
+}
+
+addBtn.addEventListener("click", addTodo);
