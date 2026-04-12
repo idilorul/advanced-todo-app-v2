@@ -65,6 +65,21 @@ function addTodo() {
 }
 
 // ========================
+// DELETE TODO
+// ========================
+function deleteTodo(event) {
+  const clickedButton = event.target;
+  const todoItem = clickedButton.parentElement.parentElement;
+  const todoId = Number(todoItem.dataset.id);
+
+  todos = todos.filter(function (todo) {
+    return todo.id !== todoId;
+  });
+
+  renderTodos();
+}
+
+// ========================
 // RENDER TODOS
 // ========================
 function renderTodos() {
@@ -102,6 +117,7 @@ function renderTodos() {
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "Delete";
     deleteBtn.classList.add("delete-btn");
+    deleteBtn.addEventListener("click", deleteTodo);
 
     contentDiv.appendChild(textSpan);
     contentDiv.appendChild(categoryInfo);
