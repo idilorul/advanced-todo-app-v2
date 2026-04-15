@@ -128,3 +128,8 @@ button:hover {
   background: red;
   color: white;
 }
+
+.completed {
+  text-decoration: line-through;
+  opacity: 0.6;
+}

@@ -80,12 +80,46 @@ function deleteTodo(event) {
 }
 
 // ========================
+// TOGGLE TODO
+// ========================
+function toggleTodo(event) {
+  const toggleClicked = event.target;
+  const todoToggle = toggleClicked.parentElement.parentElement;
+  const toggleId = Number(todoToggle.dataset.id);
+
+  todos.forEach(function (todo) {
+    if (todo.id === toggleId) {
+      todo.completed = !todo.completed;
+      console.log("Toggled:", todo.text, todo.completed);
+    }
+  });
+
+  console.log("Current filter:", currentStatusFilter);
+
+  renderTodos();
+}
+
+// ========================
 // RENDER TODOS
 // ========================
 function renderTodos() {
   todoList.innerHTML = "";
 
-  todos.forEach(function (todo) {
+  let filteredTodos = todos;
+
+  if (currentStatusFilter === "active") {
+    filteredTodos = filteredTodos.filter(function (todo) {
+      return todo.completed === false;
+    });
+  }
+
+  if (currentStatusFilter === "completed") {
+    filteredTodos = filteredTodos.filter(function (todo) {
+      return todo.completed === true;
+    });
+  }
+
+  filteredTodos.forEach(function (todo) {
     const li = document.createElement("li");
      li.dataset.id = todo.id;
 
@@ -97,6 +131,10 @@ function renderTodos() {
 
     const textSpan = document.createElement("span");
     textSpan.textContent = todo.text;
+    if (todo.completed) {
+      textSpan.classList.add("completed");
+    }
+    textSpan.addEventListener("click", toggleTodo);
 
     const categoryInfo = document.createElement("small");
     categoryInfo.textContent = "Category: " + todo.category;
@@ -132,5 +170,20 @@ function renderTodos() {
     todoList.appendChild(li);
   });
 }
+
+allBtn.addEventListener("click", function () {
+  currentStatusFilter = "all";
+  renderTodos();
+});
+
+activeBtn.addEventListener("click", function() {
+  currentStatusFilter = "active";
+  renderTodos();
+});
+
+completedBtn.addEventListener("click", function() {
+  currentStatusFilter = "completed";
+  renderTodos();
+});
 
 addBtn.addEventListener("click", addTodo);
