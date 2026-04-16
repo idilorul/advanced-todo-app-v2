@@ -1,22 +1,29 @@
-## Advanced Todo App (Vanilla JS)
+## Latest Update (Day X – Filters & Task Tracking)
 
-## Latest Update
+### ✅ What I implemented
 
-### What I implemented
+* Added **category-based filtering** to display tasks by selected category
+* Implemented **real-time search filter** using input event
+* Integrated **task counter** to show remaining (active) tasks dynamically
+* Combined **multiple filters (status + category + search)** into a single render pipeline
 
-* Added **delete functionality** using `dataset.id` and `Array.filter`
-* Implemented **toggle completed feature** by updating todo state (`completed`)
-* Connected UI interactions to state via `event.target` and DOM traversal
-* Introduced conditional rendering with `.completed` class
+### 🔧 What I improved
 
-### What I improved
+* Refactored `renderTodos()` to support **multi-layer filtering logic**
+* Introduced **case-insensitive search** using `toLowerCase()`
+* Used `includes()` for partial text matching instead of exact match
+* Ensured all UI updates are **state-driven** (no direct DOM filtering hacks)
 
-* Refactored logic to clearly separate **state updates** and **UI rendering**
-* Ensured all changes trigger a full `renderTodos()` cycle
-* Established consistent event handling pattern across features
+### 🧠 Why it matters
 
-### Why it matters
+* The app now behaves like a real-world Todo application with **dynamic filtering**
+* Strengthened understanding of:
 
-* Reinforces **state-driven UI architecture**
-* Builds foundation for advanced features like filtering and search
-* Demonstrates ability to connect DOM events → state → re-render cycle
+  * `filter()` chaining
+  * state vs UI separation
+  * string matching (`includes`, case normalization)
+* Established a scalable pattern:
+
+  * `todos → apply filters → render`
+
+This update marks a transition from basic CRUD to **interactive, state-driven UI behavior**.
