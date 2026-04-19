@@ -29,6 +29,20 @@ let currentSearchTerm = "";
 
 let todos = [];
 
+
+const savedTodos = localStorage.getItem("todos");
+
+if (savedTodos) {
+  todos = JSON.parse(savedTodos);
+}
+
+// ========================
+// SAVE TODOS
+// ========================
+function saveTodos() {
+  localStorage.setItem("todos", JSON.stringify(todos));
+}
+
 // ========================
 // ADD TODO
 // ========================
@@ -53,6 +67,7 @@ function addTodo() {
   };
 
   todos.push(newTodo);
+  saveTodos();
 
   todoInput.value = "";
   categorySelect.value = "study";
@@ -76,6 +91,7 @@ function deleteTodo(event) {
     return todo.id !== todoId;
   });
 
+  saveTodos();
   renderTodos();
 }
 
@@ -96,7 +112,39 @@ function toggleTodo(event) {
 
   console.log("Current filter:", currentStatusFilter);
 
+  saveTodos();
   renderTodos();
+}
+
+// ========================
+// CLEAR COMPLETED TODOS
+// ========================
+function clearCompletedTodos() {
+  todos = todos.filter(function (todo) {
+    return todo.completed === false;
+  });
+
+  saveTodos();
+  renderTodos();
+}
+
+// ========================
+// UPDATE STATUS FILTER BUTTONS
+// ========================
+function updateStatusFilterButtons() {
+  allBtn.classList.remove("active-filter");
+  activeBtn.classList.remove("active-filter");
+  completedBtn.classList.remove("active-filter");
+
+  if (currentStatusFilter === "all") {
+    allBtn.classList.add("active-filter");
+  }
+  if (currentStatusFilter === "active") {
+    activeBtn.classList.add("active-filter");
+  }
+  if (currentStatusFilter === "completed") {
+    completedBtn.classList.add("active-filter");
+  }
 }
 
 // ========================
@@ -104,6 +152,8 @@ function toggleTodo(event) {
 // ========================
 function renderTodos() {
   todoList.innerHTML = "";
+
+  updateStatusFilterButtons();
 
   // Count only unfinished tasks
   const remainingTasks = todos.filter(function (todo) {
@@ -116,6 +166,20 @@ function renderTodos() {
   } else {
     taskCount.textContent = remainingTasks + " tasks left";
   }
+
+  const hasCompletedTodos = todos.some(function (todo) {
+    return todo.completed === true;
+  });
+
+  clearCompletedBtn.disabled = !hasCompletedTodos;
+
+  if (hasCompletedTodos) {
+  clearCompletedBtn.textContent = "Clear Completed";
+  clearCompletedBtn.title = "Remove all completed tasks";
+} else {
+  clearCompletedBtn.textContent = "No completed tasks";
+  clearCompletedBtn.title = "No completed tasks to clear";
+}
 
   // Start with the full todos array
   let filteredTodos = todos;
@@ -146,6 +210,26 @@ function renderTodos() {
       return todo.text.toLowerCase().includes(currentSearchTerm);
     });
   }
+
+ if (filteredTodos.length === 0) {
+  const emptyMessage = document.createElement("p");
+  emptyMessage.classList.add("empty-message");
+
+  if (currentSearchTerm !== "") {
+    emptyMessage.textContent = "No results found.";
+  } else if (currentStatusFilter === "completed") {
+    emptyMessage.textContent = "No completed tasks.";
+  } else if (currentStatusFilter === "active") {
+    emptyMessage.textContent = "No active tasks.";
+  } else if (todos.length === 0) {
+    emptyMessage.textContent = "No tasks yet. Add your first task.";
+  } else {
+    emptyMessage.textContent = "No tasks match your filters.";
+  }
+
+  todoList.appendChild(emptyMessage);
+  return;
+}
 
   filteredTodos.forEach(function (todo) {
     const li = document.createElement("li");
@@ -241,7 +325,16 @@ searchInput.addEventListener("input", function () {
   renderTodos();
 });
 
+clearCompletedBtn.addEventListener("click", clearCompletedTodos);
+
 // ========================
 // ADD EVENT
 // ========================
 addBtn.addEventListener("click", addTodo);
+todoInput.addEventListener("keydown", function(event) {
+  if (event.key === "Enter") {
+    addTodo();
+  }
+})
+
+renderTodos();

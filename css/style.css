@@ -92,10 +92,6 @@ button:hover {
   text-decoration: line-through;
 }
 
-.selected {
-  background-color: #0077ff;
-}
-
 .empty-message {
   text-align: center;
   color: #777;
@@ -132,4 +128,15 @@ button:hover {
 .completed {
   text-decoration: line-through;
   opacity: 0.6;
+}
+
+#clearCompletedBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.active-filter {
+  background-color: #0077ff;
+  color: white;
 }
