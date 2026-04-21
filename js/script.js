@@ -26,10 +26,11 @@ const todoList = document.querySelector("#todoList");
 let currentStatusFilter = "all";
 let currentCategoryFilter = "all";
 let currentSearchTerm = "";
-
 let todos = [];
 
-
+// ========================
+// LOAD TODOS
+// ========================
 const savedTodos = localStorage.getItem("todos");
 
 if (savedTodos) {
@@ -75,16 +76,13 @@ function addTodo() {
   dueDateInput.value = "";
 
   renderTodos();
-
-  console.log(todos);
 }
 
 // ========================
 // DELETE TODO
 // ========================
 function deleteTodo(event) {
-  const clickedButton = event.target;
-  const todoItem = clickedButton.parentElement.parentElement;
+  const todoItem = event.target.closest("li");
   const todoId = Number(todoItem.dataset.id);
 
   todos = todos.filter(function (todo) {
@@ -99,18 +97,14 @@ function deleteTodo(event) {
 // TOGGLE TODO
 // ========================
 function toggleTodo(event) {
-  const toggleClicked = event.target;
-  const todoToggle = toggleClicked.parentElement.parentElement;
-  const toggleId = Number(todoToggle.dataset.id);
+  const todoItem = event.target.closest("li");
+  const todoId = Number(todoItem.dataset.id);
 
   todos.forEach(function (todo) {
-    if (todo.id === toggleId) {
+    if (todo.id === todoId) {
       todo.completed = !todo.completed;
-      console.log("Toggled:", todo.text, todo.completed);
     }
   });
-
-  console.log("Current filter:", currentStatusFilter);
 
   saveTodos();
   renderTodos();
@@ -129,6 +123,44 @@ function clearCompletedTodos() {
 }
 
 // ========================
+// EDIT TODO FUNCTION
+// ========================
+function editTodo(event) {
+  // Find the clicked todo item using DOM traversal
+  const todoItem = event.target.closest("li");
+  const todoId = Number(todoItem.dataset.id);
+
+  // Find the corresponding todo object in the state array
+  const todoToEdit = todos.find(function (todo) {
+    return todo.id === todoId;
+  });
+
+  // Ask user for updated text (pre-filled with current value)
+  const updatedText = prompt("Edit your task:", todoToEdit.text);
+
+  // If user cancels, stop execution
+  if (updatedText === null) {
+    return;
+  }
+
+  const trimmedText = updatedText.trim();
+
+  // Prevent empty task update
+  if (trimmedText === "") {
+    alert("Task cannot be empty.");
+    return;
+  }
+
+  // Update the todo text in state
+  todoToEdit.text = trimmedText;
+
+  // Persist changes and re-render UI
+  saveTodos();
+  renderTodos();
+}
+
+
+// ========================
 // UPDATE STATUS FILTER BUTTONS
 // ========================
 function updateStatusFilterButtons() {
@@ -139,34 +171,37 @@ function updateStatusFilterButtons() {
   if (currentStatusFilter === "all") {
     allBtn.classList.add("active-filter");
   }
+
   if (currentStatusFilter === "active") {
     activeBtn.classList.add("active-filter");
   }
+
   if (currentStatusFilter === "completed") {
     completedBtn.classList.add("active-filter");
   }
 }
 
 // ========================
-// RENDER TODOS
+// UPDATE TASK COUNT
 // ========================
-function renderTodos() {
-  todoList.innerHTML = "";
-
-  updateStatusFilterButtons();
-
-  // Count only unfinished tasks
+// Update remaining task count (only uncompleted todos)
+function updateTaskCount() {
   const remainingTasks = todos.filter(function (todo) {
     return todo.completed === false;
   }).length;
 
-  // Show singular/plural text correctly
   if (remainingTasks === 1) {
     taskCount.textContent = "1 task left";
   } else {
     taskCount.textContent = remainingTasks + " tasks left";
   }
+}
 
+// ========================
+// UPDATE CLEAR COMPLETED BUTTON
+// ========================
+// Enable/disable clear button based on completed tasks
+function updateClearCompletedButton() {
   const hasCompletedTodos = todos.some(function (todo) {
     return todo.completed === true;
   });
@@ -174,17 +209,38 @@ function renderTodos() {
   clearCompletedBtn.disabled = !hasCompletedTodos;
 
   if (hasCompletedTodos) {
-  clearCompletedBtn.textContent = "Clear Completed";
-  clearCompletedBtn.title = "Remove all completed tasks";
-} else {
-  clearCompletedBtn.textContent = "No completed tasks";
-  clearCompletedBtn.title = "No completed tasks to clear";
+    clearCompletedBtn.textContent = "Clear Completed";
+    clearCompletedBtn.title = "Remove all completed tasks";
+  } else {
+    clearCompletedBtn.textContent = "No completed tasks";
+    clearCompletedBtn.title = "No completed tasks to clear";
+  }
 }
 
-  // Start with the full todos array
+
+// Format date string into readable format (e.g., Apr 21, 2026)
+// Returns "No date" if empty
+function formatDate(dateString) {
+  if (!dateString) return "No date";
+
+  const date = new Date(dateString);
+
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  });
+}
+
+// ========================
+// GET FILTERED TODOS
+// ========================
+// Returns todos filtered by current UI state:
+// status (all / active / completed),
+// category, and search term
+function getFilteredTodos() {
   let filteredTodos = todos;
 
-  // Filter by completion status
   if (currentStatusFilter === "active") {
     filteredTodos = filteredTodos.filter(function (todo) {
       return todo.completed === false;
@@ -197,21 +253,25 @@ function renderTodos() {
     });
   }
 
-  // Filter by selected category
   if (currentCategoryFilter !== "all") {
     filteredTodos = filteredTodos.filter(function (todo) {
       return todo.category === currentCategoryFilter;
     });
   }
 
-  // Filter by search text
   if (currentSearchTerm !== "") {
     filteredTodos = filteredTodos.filter(function (todo) {
       return todo.text.toLowerCase().includes(currentSearchTerm);
     });
   }
 
- if (filteredTodos.length === 0) {
+  return filteredTodos;
+}
+
+// ========================
+// RENDER EMPTY STATE
+// ========================
+function renderEmptyState() {
   const emptyMessage = document.createElement("p");
   emptyMessage.classList.add("empty-message");
 
@@ -228,66 +288,106 @@ function renderTodos() {
   }
 
   todoList.appendChild(emptyMessage);
-  return;
 }
 
+// ========================
+// CREATE TODO ELEMENT
+// ========================
+// Creates and returns a complete DOM element for a single todo item
+function createTodoElement(todo) {
+  const li = document.createElement("li");
+  li.dataset.id = todo.id;
+
+  const contentDiv = document.createElement("div");
+  contentDiv.classList.add("todo-content");
+
+  const actionsDiv = document.createElement("div");
+  actionsDiv.classList.add("todo-actions");
+
+  const textSpan = document.createElement("span");
+  textSpan.textContent = todo.text;
+
+  if (todo.completed) {
+    textSpan.classList.add("completed");
+  }
+
+  textSpan.addEventListener("click", toggleTodo);
+
+  const categoryInfo = document.createElement("small");
+categoryInfo.textContent = todo.category;
+categoryInfo.classList.add("category");
+categoryInfo.classList.add(todo.category);
+
+  const priorityInfo = document.createElement("small");
+  priorityInfo.textContent = "Priority: " + todo.priority;
+  priorityInfo.classList.add("priority");
+  priorityInfo.classList.add(todo.priority);
+
+  const dueDateInfo = document.createElement("small");
+  dueDateInfo.classList.add("due-date");
+
+  dueDateInfo.textContent = "Due: " + formatDate(todo.dueDate);
+
+  if (todo.dueDate) {
+    const today = new Date();
+    const due = new Date(todo.dueDate);
+
+    // Normalize dates (remove time) to compare only by day
+today.setHours(0,0,0,0);
+due.setHours(0,0,0,0);
+
+// If due date is in the past, mark as overdue
+if (due < today) {
+      dueDateInfo.classList.add("overdue");
+    }
+  }
+
+  const editBtn = document.createElement("button");
+  editBtn.textContent = "Edit";
+  editBtn.classList.add("edit-btn");
+  editBtn.addEventListener("click", editTodo);
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "Delete";
+  deleteBtn.classList.add("delete-btn");
+  deleteBtn.addEventListener("click", deleteTodo);
+
+  actionsDiv.appendChild(editBtn);
+  actionsDiv.appendChild(deleteBtn);
+
+  contentDiv.appendChild(textSpan);
+  contentDiv.appendChild(categoryInfo);
+  contentDiv.appendChild(priorityInfo);
+  contentDiv.appendChild(dueDateInfo);
+
+  li.appendChild(contentDiv);
+  li.appendChild(actionsDiv);
+
+  return li;
+}
+
+// ========================
+// RENDER TODOS
+// ========================
+// Main render function:
+// Clears UI and rebuilds todo list based on current state
+function renderTodos() {
+  todoList.innerHTML = "";
+
+  updateStatusFilterButtons();
+  updateTaskCount();
+  updateClearCompletedButton();
+
+  const filteredTodos = getFilteredTodos();
+
+  if (filteredTodos.length === 0) {
+    renderEmptyState();
+    return;
+  }
+
   filteredTodos.forEach(function (todo) {
-    const li = document.createElement("li");
-    li.dataset.id = todo.id;
-
-    const contentDiv = document.createElement("div");
-    contentDiv.classList.add("todo-content");
-
-    const actionsDiv = document.createElement("div");
-    actionsDiv.classList.add("todo-actions");
-
-    const textSpan = document.createElement("span");
-    textSpan.textContent = todo.text;
-
-    // Add completed style if task is finished
-    if (todo.completed) {
-      textSpan.classList.add("completed");
-    }
-
-    // Click task text to toggle completed state
-    textSpan.addEventListener("click", toggleTodo);
-
-    const categoryInfo = document.createElement("small");
-    categoryInfo.textContent = "Category: " + todo.category;
-    categoryInfo.classList.add("category");
-
-    const priorityInfo = document.createElement("small");
-    priorityInfo.textContent = "Priority: " + todo.priority;
-    priorityInfo.classList.add("priority");
-
-    const dueDateInfo = document.createElement("small");
-    dueDateInfo.classList.add("due-date");
-
-    // Show fallback text if no due date exists
-    if (todo.dueDate === "") {
-      dueDateInfo.textContent = "Due: No date";
-    } else {
-      dueDateInfo.textContent = "Due: " + todo.dueDate;
-    }
-
-    const deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "Delete";
-    deleteBtn.classList.add("delete-btn");
-
-    // Delete task when button is clicked
-    deleteBtn.addEventListener("click", deleteTodo);
-
-    contentDiv.appendChild(textSpan);
-    contentDiv.appendChild(categoryInfo);
-    contentDiv.appendChild(priorityInfo);
-    contentDiv.appendChild(dueDateInfo);
-
-    actionsDiv.appendChild(deleteBtn);
-
-    li.appendChild(contentDiv);
-    li.appendChild(actionsDiv);
-
-    todoList.appendChild(li);
+    const todoElement = createTodoElement(todo);
+    todoList.appendChild(todoElement);
   });
 }
 
@@ -331,10 +431,11 @@ clearCompletedBtn.addEventListener("click", clearCompletedTodos);
 // ADD EVENT
 // ========================
 addBtn.addEventListener("click", addTodo);
-todoInput.addEventListener("keydown", function(event) {
+
+todoInput.addEventListener("keydown", function (event) {
   if (event.key === "Enter") {
     addTodo();
   }
-})
+});
 
 renderTodos();

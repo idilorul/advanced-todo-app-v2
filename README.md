@@ -1,22 +1,21 @@
-## Latest Update
+### 🔹 What I implemented
 
-### What I implemented
+* Added **Edit functionality** to update existing tasks using a prompt-based input
+* Introduced **priority badges** with dynamic styling (low / medium / high)
+* Converted **category display into visual badges** for better UI clarity
+* Implemented **formatted due date display** using `toLocaleDateString`
+* Added **overdue task highlighting** based on date comparison
 
-* Added **localStorage persistence** to store and retrieve todos across sessions
-* Implemented **Clear Completed** functionality using `Array.filter()`
-* Added **Enter key support** for faster task creation
-* Introduced **dynamic empty state messages** based on filters and search conditions
+### 🔹 What I improved
 
-### What I improved
+* Enhanced UI readability with **badge-based visual hierarchy** (priority & category)
+* Improved user feedback by **highlighting overdue tasks**
+* Refactored date handling into a reusable `formatDate()` helper
+* Strengthened input validation in edit flow (prevent empty updates)
 
-* Refined state-driven rendering logic to handle multiple UI states (filters, search, empty states)
-* Improved UX by dynamically disabling the "Clear Completed" button when no completed tasks exist
-* Enhanced feedback with context-aware button text and tooltips
-* Made filter buttons visually reflect the current state (active selection)
+### 🔹 Why it matters
 
-### Why it matters
-
-* The app now behaves like a **real-world product** with persistent data and responsive UI
-* Demonstrates strong understanding of **state management and UI synchronization**
-* Improves usability by providing clear feedback for all edge cases (empty lists, filters, search)
-* Moves the project closer to a **portfolio-ready application standard**
+* Moves the app closer to a **real product experience** rather than a basic project
+* Demonstrates ability to handle **data updates (CRUD - Update)** effectively
+* Shows understanding of **state-driven UI + conditional styling**
+* Improves **UX and visual communication**, which is critical for portfolio-quality apps
