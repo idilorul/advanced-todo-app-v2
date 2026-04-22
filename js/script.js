@@ -27,6 +27,7 @@ let currentStatusFilter = "all";
 let currentCategoryFilter = "all";
 let currentSearchTerm = "";
 let todos = [];
+let editingTodoId = null;
 
 // ========================
 // LOAD TODOS
@@ -126,37 +127,63 @@ function clearCompletedTodos() {
 // EDIT TODO FUNCTION
 // ========================
 function editTodo(event) {
-  // Find the clicked todo item using DOM traversal
+  if (editingTodoId !== null) return;
+
   const todoItem = event.target.closest("li");
   const todoId = Number(todoItem.dataset.id);
 
-  // Find the corresponding todo object in the state array
   const todoToEdit = todos.find(function (todo) {
     return todo.id === todoId;
   });
 
-  // Ask user for updated text (pre-filled with current value)
-  const updatedText = prompt("Edit your task:", todoToEdit.text);
+  if (!todoToEdit) return;
 
-  // If user cancels, stop execution
-  if (updatedText === null) {
-    return;
+  const textSpan = todoItem.querySelector(".todo-text");
+  if (!textSpan) return;
+
+  editingTodoId = todoId;
+
+  const editInput = document.createElement("input");
+  editInput.type = "text";
+  editInput.value = todoToEdit.text;
+  editInput.classList.add("edit-input");
+
+  if (todoToEdit.completed) {
+    editInput.classList.add("completed");
   }
 
-  const trimmedText = updatedText.trim();
+  textSpan.replaceWith(editInput);
 
-  // Prevent empty task update
-  if (trimmedText === "") {
-    alert("Task cannot be empty.");
-    return;
+  editInput.focus();
+  editInput.setSelectionRange(editInput.value.length, editInput.value.length);
+
+  let isSaving = false;
+
+  function saveEdit() {
+    if (isSaving) return;
+    isSaving = true;
+
+    const trimmedText = editInput.value.trim();
+
+    editingTodoId = null;
+
+    if (trimmedText === "") {
+      renderTodos();
+      return;
+    }
+
+    todoToEdit.text = trimmedText;
+    saveTodos();
+    renderTodos();
   }
 
-  // Update the todo text in state
-  todoToEdit.text = trimmedText;
+  editInput.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+      saveEdit();
+    }
+  });
 
-  // Persist changes and re-render UI
-  saveTodos();
-  renderTodos();
+  editInput.addEventListener("blur", saveEdit);
 }
 
 
@@ -306,6 +333,7 @@ function createTodoElement(todo) {
 
   const textSpan = document.createElement("span");
   textSpan.textContent = todo.text;
+  textSpan.classList.add("todo-text");
 
   if (todo.completed) {
     textSpan.classList.add("completed");

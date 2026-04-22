@@ -208,3 +208,17 @@ button:hover {
 .edit-btn:hover {
   opacity: 0.9;
 }
+
+.edit-input {
+  width: 100%;
+  padding: 8px 10px;
+  font: inherit;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.edit-input:focus {
+  border-color: #888;
+}
